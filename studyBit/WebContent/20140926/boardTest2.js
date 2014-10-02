@@ -3,54 +3,37 @@
 changeState("create");
 
 var boardList = [];
-$("#btnAdd").onclick = function(event) {
-	var board = new Board($("#title").value, $("#content").value,
-			$("#writer").value, $("#password").value);
-
+$("#btnAdd").onclick = function(event){
+	var board = new Board( $("#title").value,
+			$("#content").value,
+			$("#writer").value,
+			$("#password").value
+			);
 	boardList.push(board);
+	
 	resetForm();
-	reloadBoardlist();
-}
-
-$("#btnCancel").onclick = function(event) {
-	changeState("create");
-}
-
-function changeState(state) {
-	var stateMap = {
-		create : "none",
-		detail : "none"
-	};
-
-	stateMap[state] = "";
-
-	var createClass = document.body.querySelectorAll(".create");
-	var detailClass = document.body.querySelectorAll(".detail");
-
-	for (var i = 0; i < createClass.length; i++) {
-		$(createClass[i]).css("display",stateMap.create);
+	reloadBoard();
 	}
-
-	for (var i = 0; i < detailClass.length; i++) {
-		$(detailClass[i]).css("display", stateMap.detail);
-	}
-}
-
-function Board(title, content, writer, password) {
+function Board(title, content, writer, password){
 	this.title = title;
 	this.content = content;
 	this.writer = writer;
 	this.password = password;
 	this.date = new Date();
 	this.count = 0;
+	
 }
 
-function resetForm() {
-	$('#btnCancel').onclick();
+$("#btnCancel").onclick = function(event){
+	changeState("create");
 }
 
-function reloadBoardlist() {
+function resetForm(){
+	$("#btnCancel").click();
+}
 
+function reloadBoard(){
+	
 	var boardTable = $("#boardTable");
 	var tbody = boardTable.firstElementChild;
 
@@ -61,12 +44,11 @@ function reloadBoardlist() {
 	for (var i = 0; i < boardList.length; i++) {
 		$("<tr>")
 		.append($("<td>").html(i))
-		.append($("<td>")
-				.append( $("<a>")
+		.append($("<td>").append( $("<a>")
 				.html(boardList[i].title)
 				.attr("bno", i)
 				.attr("href","#")
-				.click(loadBoardDetail)))
+				.click(detailBoard)))
 		.append($("<td>")
 				.html(boardList[i].writer))
 		.append($("<td>")
@@ -75,13 +57,33 @@ function reloadBoardlist() {
 				.html(boardList[i].count))
 		.appendTo(tbody);
 	}
+	
 }
 
-function loadBoardDetail(event) {
-	event.preventDefault();
+function changeState(state){
+	var stateMap = {
+			"create" : "none",
+			"detail" : "none"
+	}
+	stateMap[state] = "";
+	
+	var createClass = document.querySelectorAll(".create");
+	var detailClass = document.querySelectorAll(".detail");
+	
+	for(var i=0; i<createClass.length; i++){
+		$(createClass[i]).css("display", stateMap.create);
+	}
+	
+	for(var i=0; i<detailClass.length; i++){
+		$(detailClass[i]).css("display", stateMap.detail);
+	}
+}
 
+function detailBoard(){
 	changeState("detail");
-
+	
+	console.log(this.getAttribute("bno"));
+	
 	var board = boardList[this.getAttribute("bno")];
 	$("#number").val(this.getAttribute("bno"));
 	$("#title").val(board.title);
@@ -89,4 +91,3 @@ function loadBoardDetail(event) {
 	$("#writer").val(board.writer);
 	$("#date").val(toYYYYMMDD(board.date));
 }
-
